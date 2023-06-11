@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/satirbilgileri.dart';
@@ -15,14 +16,36 @@ class TeklifGoruntule extends StatefulWidget {
 }
 
 class _TeklifGoruntuleState extends State<TeklifGoruntule> {
-
+  User? _user;
+  String isinadi="";
+  String isingunu="";
+  String isinfiyati="";
+  String isinaciklamasi="";
+  String isveren="";
+  String teklifiveren="";
+  Future<void> _fetchUserData() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? currentUser = auth.currentUser;
+    if (currentUser != null) {
+      setState(() {
+        _user = currentUser;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    _fetchUserData();
     final List<String>? message = ModalRoute.of(context)?.settings.arguments as List<String>?;
     double ucret=double.parse(message![1]);
     double gun=double.parse(message![2]);
     double gunluk=ucret/gun;
     String TeklifDetay=message![0]+" işini "+gun.toString()+" gün boyunca, günlük "+ gunluk.toString()+"TL ücret karşılığında toplamda "+ucret.toString()+"TL alarak işi bitirmeyi taahhüt ediyorsunuz.";
+   isinadi=message![0];
+   isingunu=message![2];
+   isinfiyati=message![1];
+   isinaciklamasi=message![3];
+   isveren=message![4];
+    teklifiveren= _user!.email ?? '';
     return Column(
       children: [
         Container(
@@ -61,6 +84,7 @@ class _TeklifGoruntuleState extends State<TeklifGoruntule> {
     );
 
   }
+
   final snackBar = SnackBar(
     content: Text('İşlem Başarılı'),
     duration: Duration(seconds: 3),
@@ -76,7 +100,7 @@ class _TeklifGoruntuleState extends State<TeklifGoruntule> {
 
       ),
       child: FilledButton(onPressed: (){
-
+        createCollectionWithAutoID(isinadi,isinfiyati,isinaciklamasi,isingunu,teklifiveren,isveren);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => Anasayfa(),
@@ -92,5 +116,30 @@ class _TeklifGoruntuleState extends State<TeklifGoruntule> {
         child: Text(baslik,style: GoogleFonts.quicksand(fontSize: 25),),),
     );
   }
+
+  void createCollectionWithAutoID(String adi,String fiyati,String aiklama,String gun,String Kullaniciadi,String KayitSahibi) {
+
+    if ((Kullaniciadi==""||Kullaniciadi==null)&&_user!=null){
+      Kullaniciadi=_user!.email.toString();
+    }
+    FirebaseFirestore.instance.collection('selcukyaman321321').add({
+
+      'date': adi,
+      'IsAciklama': fiyati,
+      'IsAdi': aiklama,
+      'IsFiyati': gun,
+      'Kullaniciadi': Kullaniciadi,
+      'KayitSahibi': KayitSahibi,
+
+    })
+        .then((value) {
+      print('Tablo oluşturuldu ve veri eklendi. Tablo ID: ${value.id}');
+    })
+        .catchError((error) {
+      print('Hata: $error');
+    }); print("dgksjkjg"+adi);
+  }
+
+
 
 }

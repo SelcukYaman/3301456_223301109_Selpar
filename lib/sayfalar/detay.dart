@@ -17,7 +17,7 @@ class Detay extends StatefulWidget {
 
 class _DetayState extends State<Detay> {
 
-
+String isveren="";
   TextEditingController  TeklifSure= TextEditingController();
   TextEditingController  TeklifUcret= TextEditingController();
   TextEditingController  Mesaj= TextEditingController();
@@ -29,9 +29,10 @@ class _DetayState extends State<Detay> {
 
     List<Widget> satirListesi = [];
 
-    for(int i=0;i<message!.length;i++){
+    for(int i=0;i<message!.length-1;i++){
       satirListesi.add(SatirBilgileri(selcuk[i].toString(), message![i]));
     }
+    isveren=message[4];
     return Scaffold(
       backgroundColor: Renk_Belirle("D5EEBB"),
       appBar: AppBar(
@@ -157,6 +158,7 @@ class _DetayState extends State<Detay> {
           data.add(TeklifUcret.text);
           data.add(TeklifSure.text);
           data.add(Mesaj.text);
+          data.add(isveren);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => TeklifGoruntule(),

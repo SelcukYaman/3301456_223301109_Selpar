@@ -3,15 +3,88 @@ import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../sayfalar/TeklifGuncelle.dart';
 import '../sayfalar/detay.dart';
-Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1){
+import 'islemler.dart';
+Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1,String IsSahibi){
+  String truncatedAciklama ;
+  if (aciklama.length > 23) {
+    truncatedAciklama = aciklama.substring(0, 23) + "...";
+  } else{  truncatedAciklama=aciklama;}
+
+    return Container(
+
+        padding: EdgeInsets.all(15),
+        margin: EdgeInsets.symmetric(vertical: 10),
+
+        decoration: BoxDecoration(
+          color: Renk_Belirle("00E7FF"),
+          border: Border.all(color: Renk_Belirle("000000"), width: 1),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: Row(children: [ Container(
+          width: 85,
+          height: 75,
+          child: AutoSizeText(baslik,
+            style: GoogleFonts.babylonica(color: Colors.white, fontSize: 16),),
+          decoration: BoxDecoration(color: Renk_Belirle("123456"),
+              borderRadius: BorderRadius.circular(150)),
+          padding: EdgeInsets.all(25),
+
+        ),
+          SizedBox(width: 10,),
+          Column(children: [
+            AutoSizeText(truncatedAciklama,
+              style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
+            Row(children: [
+              AutoSizeText(fiyat,
+                style: GoogleFonts.quicksand(fontWeight: FontWeight.w700),),
+              SizedBox(width: 30,),
+              AutoSizeText(tarih,
+                style: GoogleFonts.quicksand(fontWeight: FontWeight.w700),),
+            ],)
+
+          ],),
+          Column(children: [
+            IconButton(
+              icon: Icon(Icons.shop),
+              onPressed: () {
+                List<String> data=[];
+                data.clear();
+                data.add(baslik);
+                data.add(aciklama);
+                data.add(fiyat);
+                data.add(tarih);
+                data.add(IsSahibi);
+                Navigator.push(
+                  context1!,
+                  MaterialPageRoute(builder: (context1) => Detay(),
+                    settings: RouteSettings(
+                      arguments:data , // aktarılacak veri
+                    ),  ),
+                );
+              },)
+          ],)
+        ],
+        )
+    );
+  }
+
+Widget DikeyTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1,String IsSahibi){
+
+  if(baslik!=null&&aciklama!=null&&fiyat!=null&&tarih!=null){
+
+    String truncatedAciklama ;
+    if (aciklama.length > 23) {
+       truncatedAciklama = aciklama.substring(0, 23) + "...";
+    } else{  truncatedAciklama=aciklama;}
   return Container(
 
       padding: EdgeInsets.all(15),
       margin: EdgeInsets.symmetric(vertical: 10),
 
       decoration: BoxDecoration(
-        color: Renk_Belirle("00E7FF"),
+
         border: Border.all(color: Renk_Belirle("000000"),width: 1),
         borderRadius: BorderRadius.circular(30),
       ),
@@ -24,7 +97,7 @@ Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,Buil
       ),
         SizedBox(width: 10,),
         Column(children: [
-          AutoSizeText(aciklama.substring(0,23)+"...",style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
+          AutoSizeText(truncatedAciklama ,style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
           Row(children: [
             AutoSizeText(fiyat,style: GoogleFonts.quicksand(fontWeight: FontWeight.w700),),
             SizedBox(width: 30,),
@@ -42,21 +115,42 @@ Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,Buil
               data.add(aciklama);
               data.add(fiyat);
               data.add(tarih);
-              Navigator.push(
+              data.add(IsSahibi);
+              if(context1!=null){   Navigator.push(
                 context1!,
+
                 MaterialPageRoute(builder: (context1) => Detay(),
                   settings: RouteSettings(
                     arguments:data , // aktarılacak veri
                   ),  ),
               );
-            },)
+            }})
         ],)
       ],
       )
   );
 }
-Widget DikeyTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1){
-  return Container(
+else {return Container(
+
+  );}}
+Widget ProfilTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1,String id){
+
+  if(baslik!=null&&aciklama!=null&&fiyat!=null&&tarih!=null){
+
+    String truncatedAciklama ;
+    if (aciklama.length > 23) {
+       truncatedAciklama = aciklama.substring(0, 23) + "...";
+    } else{  truncatedAciklama=aciklama;}
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context1,
+        MaterialPageRoute(
+          builder: (context1) => TeklifGuncelle(ilanId: id),
+        ),
+      );
+    },
+    child:Container(
 
       padding: EdgeInsets.all(15),
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -74,38 +168,33 @@ Widget DikeyTaslak(String baslik,String aciklama,String fiyat, String tarih,Buil
 
       ),
         SizedBox(width: 10,),
+
         Column(children: [
-          AutoSizeText(aciklama.substring(0,23)+"...",style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
+          AutoSizeText(truncatedAciklama ,style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
           Row(children: [
             AutoSizeText(fiyat,style: GoogleFonts.quicksand(fontWeight: FontWeight.w700),),
             SizedBox(width: 30,),
             AutoSizeText(tarih,style: GoogleFonts.quicksand(fontWeight: FontWeight.w700),),
-          ],)
+          ],),
+
 
         ],),
-        Column(children: [
+
+        Row(children: [
           IconButton(
-            icon: Icon(Icons.shop),
+            icon: Icon(Icons.delete,),
             onPressed: () {
-              List<String> data=[];
-              data.clear();
-              data.add(baslik);
-              data.add(aciklama);
-              data.add(fiyat);
-              data.add(tarih);
-              Navigator.push(
-                context1!,
-                MaterialPageRoute(builder: (context1) => Detay(),
-                  settings: RouteSettings(
-                    arguments:data , // aktarılacak veri
-                  ),  ),
-              );
-            },)
+              deleteData(id,context1);
+            },),
         ],)
       ],
-      )
+      ),),
   );
 }
+else {return Container(
+
+  );}}
+
 Widget TeklifTema(BuildContext context,String yazi){
   return  Container(
     height: MediaQuery.of(context).size.height/4,

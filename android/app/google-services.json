@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "836105365839",
+    "project_id": "selcukdeneme-93157",
+    "storage_bucket": "selcukdeneme-93157.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836105365839:android:c226dadf300e5e77d5fd3a",
+        "android_client_info": {
+          "package_name": "com.selpar.selpar_selcuk_yamann_223301109"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836105365839-mis7c9pp8dgqjh165gc5hr8kcrsmi4n7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANOsKFk-_-7dWxmF6nqJywgdr_kpEalnE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836105365839-mis7c9pp8dgqjh165gc5hr8kcrsmi4n7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

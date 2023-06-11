@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/tema.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../arayuz.dart';
 import '../sabitler/renk.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class Kayitol extends StatefulWidget {
   const Kayitol({Key? key}) : super(key: key);
@@ -13,6 +16,10 @@ class Kayitol extends StatefulWidget {
 }
 
 class _KayitolState extends State<Kayitol> {
+  TextEditingController _eposta = TextEditingController();
+  TextEditingController _sifre = TextEditingController();
+  TextEditingController _telefon = TextEditingController();
+  TextEditingController _kuladi = TextEditingController();
   Tema tema=Tema();
   @override
   Widget build(BuildContext context) {
@@ -40,18 +47,20 @@ class _KayitolState extends State<Kayitol> {
                           color: Renk_Belirle("F6F6F6"),
                           border: Border.all(color: Renk_Belirle("F6F6F6"),width: 15,)
                       ),
-                      child: Stack(children: [ Positioned(left:0,
-                        top: 0,
-                        child: Padding(child:TextButton(onPressed: (){  Navigator.push(
+                      child: SingleChildScrollView(
+                        child: Stack(children: [ Positioned(left:0,
+                          top: 0,
+                          child: Padding(child:TextButton(onPressed: (){  Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Arayuz(),
+                            ),
+                          );},child:InkWell(child: Icon(Icons.home,color: Renk_Belirle("BDF2D5"),)))
+                            , padding: EdgeInsets.only(top: 0),),),Padding(padding: EdgeInsets.only(left: 35,top: 3),child: TextButton(onPressed: (){  Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Arayuz(),
                           ),
-                        );},child:Icon( Icons.home,color: Renk_Belirle("BDF2D5"),))
-                          , padding: EdgeInsets.only(top: 0),),),Padding(padding: EdgeInsets.only(left: 35,top: 3),child: TextButton(onPressed: (){  Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Arayuz(),
-                        ),
-                      );},child: Text("Ana Sayfa" ,style: GoogleFonts.roadRage(color: Renk_Belirle("BDF2D5")),),),),birlestirici]),
+                        );},child: Text("Ana Sayfa" ,style: GoogleFonts.roadRage(color: Renk_Belirle("BDF2D5")),),),),birlestirici]),
+                      ),
                     ),
                   )
                  ],
@@ -85,7 +94,14 @@ class _KayitolState extends State<Kayitol> {
 
     margin: EdgeInsets.all(40),
 
-    child: FilledButton(onPressed: () {},
+    child: ElevatedButton(onPressed: () {
+      String EPOS=_eposta.text;
+      String Esif=_sifre.text;
+      String Eisim=_kuladi.text;
+      String Ephone=_telefon.text;
+      registerUser(Eisim,EPOS,Ephone, Esif);
+
+    },
      child: Text("Kayıt Ol",style:GoogleFonts.roadRage(color: Renk_Belirle("ffffff"),fontSize: 25) ,),
       style: FilledButton.styleFrom(backgroundColor: Renk_Belirle("216353"),fixedSize: Size(175, 50)),
 
@@ -97,6 +113,7 @@ class _KayitolState extends State<Kayitol> {
     margin: EdgeInsets.all(40),
     padding: EdgeInsets.only(left: 15,top: 5,right: 15,bottom: 5),
     child: TextField(
+      controller: _sifre,
       obscureText: sifregizleme,
       decoration:InputDecoration(
         border:  InputBorder.none,
@@ -121,10 +138,12 @@ class _KayitolState extends State<Kayitol> {
     margin: EdgeInsets.all(40),
     padding: EdgeInsets.only(left: 15,top: 5,right: 15,bottom: 5),
     child: TextField(
+      controller: _eposta,
       decoration: tema.InputDec("E-Posta",Icons.email),
 
     ),
   );Widget get Teltext => Container(
+
     decoration: tema.BoxDec(),
     margin: EdgeInsets.all(40),
     padding: EdgeInsets.only(left: 15,top: 5,right: 15,bottom: 5),
@@ -133,5 +152,33 @@ class _KayitolState extends State<Kayitol> {
 
     ),
   );
+  bool deneme=false;
+  void sontainer() async{
+     if(deneme){
+  Navigator.push(
+  context,
+  MaterialPageRoute(builder: (context) => Arayuz(),
+  ),
+  );
+}}
+  Future<void> registerUser(String fullName, String username, String phone, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: username,
+        password: password,
+      );
+      deneme=true;
+      sontainer();
 
+      print('Kullanıcı başarıyla kaydedildi.');
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'fullName': fullName,
+        'phone': phone,
+      });
+
+
+    } catch (e) {
+      print('Kayıt sırasında bir hata oluştu: $e');
+    }
+  }
 }

@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.selpar.selpar_selcuk_yamann_223301109">
    <application
+
         android:label="SelPar Para Kazanın"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">

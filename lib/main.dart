@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/Anasayfa.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'arayuz.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 

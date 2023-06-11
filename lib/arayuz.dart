@@ -4,6 +4,7 @@ import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/Anasayfa.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/kayitol.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
 class Arayuz extends StatefulWidget {
   const Arayuz({Key? key}) : super(key: key);
 
@@ -12,8 +13,11 @@ class Arayuz extends StatefulWidget {
 }
 
 class _ArayuzState extends State<Arayuz> {
+  String Kullanci="";
   @override
-
+bool deneme=false;
+  TextEditingController _kuladi = TextEditingController();
+  TextEditingController _sifre = TextEditingController();
   Widget build(BuildContext context) {
     return MaterialApp( debugShowCheckedModeBanner : false,home: Scaffold(body: Center(child: Container(
       width: MediaQuery.of(context).size.width,
@@ -47,8 +51,7 @@ class _ArayuzState extends State<Arayuz> {
     );
 
   }
-  late String kullaniciadi="";
-  late String kullanicisifre="";
+
   @override
   // TODO: implement widget
   Widget get girisbutton => Center(
@@ -56,18 +59,12 @@ class _ArayuzState extends State<Arayuz> {
       height: 44,
       width: 200,
 
-      child: FilledButton(onPressed: () {
+      child: FilledButton(onPressed: () { String kullaniciadi=_kuladi.text;
+      String kullanicisifre=_sifre.text;
         print(kullaniciadi);
         print(kullanicisifre);
-        if(kullaniciadi=='selcuk'&&kullanicisifre=='sss'){
+signInUser(kullaniciadi, kullanicisifre);
 
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Anasayfa(),
-        settings: RouteSettings(
-        arguments: kullaniciadi+kullanicisifre, // aktarılacak veri
-        ), ),
-          );}
       },style: FilledButton.styleFrom(backgroundColor: Renk_Belirle("569DAA")),
         child:Text("Giriş",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold,
         fontStyle: FontStyle.italic,
@@ -103,10 +100,7 @@ class _ArayuzState extends State<Arayuz> {
       height: 44,
       width: 380,
       child: TextField(
-        onChanged: (text) {
-          setState(() {
-            kullaniciadi = text;
-          });},
+        controller: _kuladi,
         textAlignVertical: TextAlignVertical.center,
         textAlign: TextAlign.start,
         maxLines: 1,
@@ -133,11 +127,9 @@ class _ArayuzState extends State<Arayuz> {
         width: 380,
 
         child: TextField(
+          controller: _sifre,
           obscureText: sifregizle,
-  onChanged: (text) {
-  setState(() {
-  kullanicisifre = text;
-  });},
+
           textAlignVertical: TextAlignVertical.center,
           textAlign: TextAlign.start,
           maxLines: 1,
@@ -166,4 +158,27 @@ class _ArayuzState extends State<Arayuz> {
       ),
     ),
   );
+  void signInUser(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print('Giriş başarılı: ${userCredential.user}');
+      Kullanci=email.toString();
+      List<String> data=[];
+      data.add(Kullanci);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Anasayfa(),
+          settings: RouteSettings(
+          arguments:data , // aktarılacak veri
+        ),
+        ),
+      );
+    } catch (e) {
+      print('Giriş hatası: $e');
+      deneme=false;
+    }
+  }
 }

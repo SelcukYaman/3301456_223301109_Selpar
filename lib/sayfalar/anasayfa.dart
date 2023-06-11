@@ -1,5 +1,6 @@
 
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/arayuz.dart';
@@ -9,16 +10,36 @@ import 'package:selpar_selcuk_yamann_223301109/sabitler/satirbilgileri.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/detay.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/ilanver.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:selpar_selcuk_yamann_223301109/sayfalar/profil.dart';
+import 'package:selpar_selcuk_yamann_223301109/sayfalar/teklifler.dart';
 class Anasayfa extends StatelessWidget {
  late BuildContext? context1;
+ List<Widget> satirListesi = [];
+ User? _user;
+ _fetchUserData() async {
+   FirebaseAuth auth = FirebaseAuth.instance;
+   User? currentUser = auth.currentUser;
+   if (currentUser != null) {
 
+       _user = currentUser;
 
-
+   }
+ }
   @override
   Widget build(BuildContext context) {
+
+    _fetchUserData();
     context1=context;
-    final String? message = ModalRoute.of(context)?.settings.arguments as String?;
+    String Kullanici="";
+    print("buraya girdi1");
+    final List<String>? message = ModalRoute.of(context)?.settings.arguments as List<String>?;
+    print("buraya girdi2");
 final double ekran=MediaQuery.of(context).size.height;
+
+
+
+        satirListesi.add(fetchFirestoreDatayatay(context,_user!.email.toString())) ;
 
     return SafeArea(child:
     Scaffold(
@@ -28,43 +49,104 @@ final double ekran=MediaQuery.of(context).size.height;
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-
-              TextButton(onPressed: (){  Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Arayuz(),
-                ),
-              );},child:Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Icon( Icons.home,color: Renk_Belirle("009EFF"),),
-                  Text("Ana Sayfa",style: TextStyle(color: Renk_Belirle("009EFF")),),
-
-
-                ],
-              )
-              ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-
-                    TextButton(onPressed: (){  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => IlanVer(),
-                      ),
-                    );},child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Arayuz()),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon( Icons.add,color: Renk_Belirle("009EFF"),),
-                        Text("İlan Ver",style: TextStyle(color: Renk_Belirle("009EFF")),),
-
-
+                        Icon(
+                          Icons.home,
+                          color: Renk_Belirle("009EFF"),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Ana Sayfa",
+                          style: TextStyle(color: Renk_Belirle("009EFF")),
+                        ),
                       ],
-                    )
                     ),
-
-                  ],)
-            ],),
-           
+                  ),
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => IlanVer()),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Renk_Belirle("009EFF"),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "İlan Ver",
+                          style: TextStyle(color: Renk_Belirle("009EFF")),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => teklifler()),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.insert_chart,
+                          color: Renk_Belirle("009EFF"),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Teklifler",
+                          style: TextStyle(color: Renk_Belirle("009EFF")),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => profil()),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: Renk_Belirle("009EFF"),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Profil",
+                          style: TextStyle(color: Renk_Belirle("009EFF")),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
             Container(
             height: 150,
 
@@ -74,13 +156,7 @@ final double ekran=MediaQuery.of(context).size.height;
                 width: MediaQuery.of(context).size.width-25,
 
 
-               child: ListView( scrollDirection: Axis.horizontal,children: [
-                 YatayTaslak("Yıkım", "70 M2'lik duvar yıkılması", "600TL", "22.04.2023", context),
-                 SizedBox(width: 10,),
-    YatayTaslak("Boya", "30 M2'lik duvar boyanması", "400TL", "28.04.2023", context),
-                  SizedBox(width: 10,),
-    YatayTaslak("Tesisat", "Mutfak lavobosu su sızıntısının giderilmesi", "300TL", "17.04.2023", context),
-               ]),
+               child: ListView( scrollDirection: Axis.horizontal,children: satirListesi ),
                   
                
               ),
@@ -113,31 +189,9 @@ final double ekran=MediaQuery.of(context).size.height;
                     ),
           
                  
-                   Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child: DikeyTaslak("Tesisat", "Mutfak lavobosu su sızıntısının giderilmesi", "300TL", "17.04.2023", context),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child:  DikeyTaslak("Örme", "Çocuğum için oyuncak ayı ördürmek istiyorum", "200TL", "22.05.2023", context),
-                    ), Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child:  DikeyTaslak(
-                        "Yıkım", "70 M2'lik duvar yıkılması", "600TL", "22.04.2023", context),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child:  DikeyTaslak("Mobilya", "Dolaplarımın kapaklarının takılması ve ayarlanamsı gerekiyor", "325TL", "25.04.2023", context),
-                    ), Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child: DikeyTaslak("Boya", "30 M2'lik duvar boyanması", "400TL", "28.04.2023", context),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width-25,
-                    child: BoyaTaslak,
-                    ),
-                
-              
+
+                    fetchFirestoreData(context,_user!.email.toString())
+
 
 
 
@@ -150,7 +204,177 @@ final double ekran=MediaQuery.of(context).size.height;
     ),
     );
   }
-  Widget get IconButonsl => Center(
+/*
+ Widget fetchFirestoreData(BuildContext context) {
+   return FutureBuilder<QuerySnapshot>(
+     future: FirebaseFirestore.instance.collection('selcukyaman123123').get(),
+     builder: (context, snapshot) {
+       if (snapshot.connectionState == ConnectionState.waiting) {
+         // Sorgu tamamlanana kadar yükleniyor gösterebilirsiniz
+         return CircularProgressIndicator();
+       }
+
+       if (snapshot.hasError) {
+         // Hata durumunda hata mesajını gösterebilirsiniz
+         return Text('Hata: ${snapshot.error}');
+       }
+
+       if (snapshot.hasData) {
+         QuerySnapshot<Object?>? querySnapshot = snapshot.data;
+         List<DocumentSnapshot<Object?>>? docs = querySnapshot?.docs;
+         if (docs != null && docs.isNotEmpty) {
+           int sayi=docs.length;
+           print(sayi);
+           for(int i=0;i<6; i++){
+             print(sayi);
+           var data1 = docs[i].data() as Map<String, dynamic>;
+           var field1 = data1['IsAdi'];
+           var field2 = data1['IsFiyati'];
+           var field3 = data1['IsAciklama'];
+           var field4 = data1['date'];
+
+           // Diğer alanlara da ihtiyaca göre erişebilirsiniz...
+
+           // Verileri kullanarak işlemler yapabilirsiniz
+           print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
+
+           return Container(
+             width: MediaQuery.of(context).size.width - 25,
+             child: DikeyTaslak(field1, field3, field2, field4, context),
+           );
+         }}
+       }
+
+       // Veri yoksa veya işlemler tamamlanmadıysa boş bir widget döndürebilirsiniz
+       return Container(
+         width: MediaQuery.of(context).size.width - 25,
+       );
+     },
+   );
+ }
+*/
+  Widget fetchFirestoreData(BuildContext context, String SuAnkiKullanici) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('selcukyaman123123').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          return Text('Hata: ${snapshot.error}');
+        }
+
+        if (snapshot.hasData) {
+          QuerySnapshot<Object?>? querySnapshot = snapshot.data;
+          List<DocumentSnapshot<Object?>>? docs = querySnapshot?.docs;
+          if (docs != null && docs.isNotEmpty) {
+            int sayi = docs.length;
+            print(sayi);
+            List<Widget> containers = [];
+            for (int i = 0; i < sayi; i++) {
+              var data1 = docs[i].data() as Map<String, dynamic>;
+              var field1 = data1['IsAdi'];
+              var field2 = data1['IsFiyati'];
+              var field3 = data1['IsAciklama'];
+              var oylesine = data1['Kullaniciadi'];
+              var field4 = data1['date'];
+
+              if (oylesine != SuAnkiKullanici) {
+                print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
+
+                containers.add(
+                  Container(
+                    width: MediaQuery.of(context).size.width - 25,
+                    child: DikeyTaslak(field1, field3, field2, field4, context, oylesine),
+                  ),
+                );
+              }
+            }
+
+            List<Widget> deneme1 = [];
+
+            deneme1.add(
+              Column(
+                children: [
+                  for (int i = 0; i < containers.length; i++) containers[i],
+                ],
+              ),
+            );
+
+            return deneme1[0];
+          }
+        }
+
+        return Container(
+          width: MediaQuery.of(context).size.width - 25,
+        );
+      },
+    );
+  }
+  Widget fetchFirestoreDatayatay(BuildContext context, String SuAnkiKullanici) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('selcukyaman123123').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+
+        if (snapshot.hasError) {
+          return Text('Hata: ${snapshot.error}');
+        }
+
+        if (snapshot.hasData) {
+          QuerySnapshot<Object?>? querySnapshot = snapshot.data;
+          List<DocumentSnapshot<Object?>>? docs = querySnapshot?.docs;
+          if (docs != null && docs.isNotEmpty) {
+            int sayi = docs.length;
+            print(sayi);
+            List<Widget> containers = [];
+            for (int i = 0; i < sayi; i++) {
+              var data1 = docs[i].data() as Map<String, dynamic>;
+              var field1 = data1['IsAdi'];
+              var field2 = data1['IsFiyati'];
+              var field3 = data1['IsAciklama'];
+              var oylesine = data1['Kullaniciadi'];
+              var field4 = data1['date'];
+
+              if (oylesine != SuAnkiKullanici) {
+                print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
+
+                if (context != null) {
+                  satirListesi.add(
+                    Container(
+                      width: MediaQuery.of(context).size.width - 25,
+                      child: YatayTaslak(field1, field3, field2, field4, context, oylesine),
+                    ),
+                  );
+                }
+              }
+            }
+
+            List<Widget> deneme1 = [];
+
+            deneme1.add(
+              Column(
+                children: [
+                  for (int i = 0; i < containers.length; i++)
+                    containers[i],
+                ],
+              ),
+            );
+
+            return deneme1[0];
+          }
+        }
+
+        return Container(
+          width: MediaQuery.of(context).size.width - 25,
+        );
+      },
+    );
+  }
+ Widget get IconButonsl => Center(
     child: Container( alignment:  Alignment.topLeft,
       height: 44,
       width: 200,
