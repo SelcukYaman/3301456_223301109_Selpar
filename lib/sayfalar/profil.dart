@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/Anasayfa.dart';
+import 'package:selpar_selcuk_yamann_223301109/sayfalar/tekliflerimilistele.dart';
 
 import '../sabitler/satirbilgileri.dart';
 import 'islerim.dart';
@@ -52,6 +53,15 @@ class _ProfilState extends State<profil> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Islerim()),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.file_copy_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TekliflerimiListele()),
               );
             },
           ),

@@ -161,7 +161,7 @@ String isveren="";
           data.add(isveren);
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TeklifGoruntule(),
+            MaterialPageRoute(builder: (context) => IsGuncelle(),
               settings: RouteSettings(
                 arguments: data, // aktarılacak veri
               ),

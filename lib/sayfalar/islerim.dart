@@ -46,7 +46,7 @@ class Islerim extends StatelessWidget {
                             Text('İş Veren: $isVeren'),
                             Text('İş Fiyatı: $isFiyati'),
                             Text('İş Günü: $isGunu'),
-                            Text('İş Açıklaması: $isAciklamasi'),
+                            Text('İş Veren: $isAciklamasi'),
                           ],
                         ),
                       ),

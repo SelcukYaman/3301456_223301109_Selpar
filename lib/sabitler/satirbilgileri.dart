@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../sayfalar/TeklifGuncelle.dart';
+import '../sayfalar/isguncelle.dart';
 import '../sayfalar/detay.dart';
 import 'islemler.dart';
 Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1,String IsSahibi){

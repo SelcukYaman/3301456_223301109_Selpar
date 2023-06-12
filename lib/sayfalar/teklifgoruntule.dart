@@ -8,14 +8,14 @@ import 'package:selpar_selcuk_yamann_223301109/sabitler/satirbilgileri.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/Anasayfa.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TeklifGoruntule extends StatefulWidget {
-  const TeklifGoruntule({Key? key}) : super(key: key);
+class IsGuncelle extends StatefulWidget {
+  const IsGuncelle({Key? key}) : super(key: key);
 
   @override
-  State<TeklifGoruntule> createState() => _TeklifGoruntuleState();
+  State<IsGuncelle> createState() => _TeklifGoruntuleState();
 }
 
-class _TeklifGoruntuleState extends State<TeklifGoruntule> {
+class _TeklifGoruntuleState extends State<IsGuncelle> {
   User? _user;
   String isinadi="";
   String isingunu="";
