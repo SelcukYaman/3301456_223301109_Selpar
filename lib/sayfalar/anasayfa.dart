@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:selpar_selcuk_yamann_223301109/arayuz.dart';
 import 'package:selpar_selcuk_yamann_223301109/main.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
@@ -156,7 +157,7 @@ final double ekran=MediaQuery.of(context).size.height;
                 width: MediaQuery.of(context).size.width-25,
 
 
-               child: ListView( scrollDirection: Axis.horizontal,children: satirListesi ),
+                child:fetchFirestoreDatayatay(context,_user!.email.toString()),
                   
                
               ),
@@ -269,18 +270,20 @@ final double ekran=MediaQuery.of(context).size.height;
           QuerySnapshot<Object?>? querySnapshot = snapshot.data;
           List<DocumentSnapshot<Object?>>? docs = querySnapshot?.docs;
           if (docs != null && docs.isNotEmpty) {
-            int sayi = docs.length;
-            print(sayi);
             List<Widget> containers = [];
-            for (int i = 0; i < sayi; i++) {
-              var data1 = docs[i].data() as Map<String, dynamic>;
+            for (var doc in docs) {
+              var data1 = doc.data() as Map<String, dynamic>;
               var field1 = data1['IsAdi'];
               var field2 = data1['IsFiyati'];
               var field3 = data1['IsAciklama'];
               var oylesine = data1['Kullaniciadi'];
               var field4 = data1['date'];
 
-              if (oylesine != SuAnkiKullanici) {
+              // Check if the date is in the future
+              DateTime currentDate = DateTime.now();
+              var dateFormatter = DateFormat('dd/MM/yyyy');
+              DateTime? dataDate = dateFormatter.parse(field4);
+              if (oylesine != SuAnkiKullanici && dataDate!.isAfter(currentDate)) {
                 print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
 
                 containers.add(
@@ -292,17 +295,9 @@ final double ekran=MediaQuery.of(context).size.height;
               }
             }
 
-            List<Widget> deneme1 = [];
-
-            deneme1.add(
-              Column(
-                children: [
-                  for (int i = 0; i < containers.length; i++) containers[i],
-                ],
-              ),
+            return Column(
+              children: containers,
             );
-
-            return deneme1[0];
           }
         }
 
@@ -312,6 +307,8 @@ final double ekran=MediaQuery.of(context).size.height;
       },
     );
   }
+  ScrollController _scrollController = ScrollController();
+  int adet=0;
   Widget fetchFirestoreDatayatay(BuildContext context, String SuAnkiKullanici) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('selcukyaman123123').snapshots(),
@@ -338,12 +335,16 @@ final double ekran=MediaQuery.of(context).size.height;
               var field3 = data1['IsAciklama'];
               var oylesine = data1['Kullaniciadi'];
               var field4 = data1['date'];
-
-              if (oylesine != SuAnkiKullanici) {
+              DateTime currentDate = DateTime.now();
+              var dateFormatter = DateFormat('dd/MM/yyyy');
+              DateTime? dataDate = dateFormatter.parse(field4);
+              if (oylesine != SuAnkiKullanici && dataDate!.isAfter(currentDate)) {
                 print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
 
                 if (context != null) {
-                  satirListesi.add(
+                  adet++;
+                  print(adet);
+                  containers.add(
                     Container(
                       width: MediaQuery.of(context).size.width - 25,
                       child: YatayTaslak(field1, field3, field2, field4, context, oylesine),
@@ -355,16 +356,33 @@ final double ekran=MediaQuery.of(context).size.height;
 
             List<Widget> deneme1 = [];
 
-            deneme1.add(
-              Column(
-                children: [
-                  for (int i = 0; i < containers.length; i++)
-                    containers[i],
-                ],
+
+
+
+            return Scrollbar(
+              isAlwaysShown: true,
+              controller: _scrollController, // ScrollController'ı Scrollbar'a atayın
+              child: SingleChildScrollView(
+                controller: _scrollController, // ScrollController'ı ScrollView'ye atayın
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        children: containers.map((container) {
+                          return Container(
+                            width: 400,
+                            child: container,
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
-
-            return deneme1[0];
           }
         }
 
