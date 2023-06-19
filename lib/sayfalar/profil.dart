@@ -15,7 +15,7 @@ class profil extends StatefulWidget {
 
 class _ProfilState extends State<profil> {
   User? _user;
-  DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
+
 
   @override
   void initState() {

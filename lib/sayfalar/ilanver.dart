@@ -18,7 +18,7 @@ class IlanVer extends StatefulWidget {
 
 class _IlanVerState extends State<IlanVer> {
   User? _user;
-  DatabaseReference _databaseRef = FirebaseDatabase.instance.reference();
+
   TextEditingController  IsKonu= TextEditingController();
   TextEditingController  IsFiyat= TextEditingController();
   TextEditingController  IsAciklama= TextEditingController();

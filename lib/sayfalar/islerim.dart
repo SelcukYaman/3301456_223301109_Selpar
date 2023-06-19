@@ -1,9 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Islerim extends StatelessWidget {
+ // Add a field to store the logged-in user ID or username
+
+   // Add a constructor to initialize the logged-in user
+   User? _user;
+
+   Future<void> _fetchUserData() async {
+     FirebaseAuth auth = FirebaseAuth.instance;
+     User? currentUser = auth.currentUser;
+     if (currentUser != null) {
+
+         _user = currentUser;
+
+     }
+   }
   @override
   Widget build(BuildContext context) {
+    _fetchUserData();
     return Scaffold(
       appBar: AppBar(
         title: Text('İşlerim'),
@@ -11,15 +27,18 @@ class Islerim extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.all(16.0),
         child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('yaman223301109').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('yaman223301109')
+              .where('teklifVeren', isEqualTo:    _user!.email )
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              // Sorgu tamamlanana kadar yükleniyor gösterebilirsiniz
+              // Display a loading indicator while waiting for the query to complete
               return CircularProgressIndicator();
             }
 
             if (snapshot.hasError) {
-              // Hata durumunda hata mesajını gösterebilirsiniz
+              // Display an error message if there's an error
               return Text('Hata: ${snapshot.error}');
             }
 
@@ -43,7 +62,7 @@ class Islerim extends StatelessWidget {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('İş Veren: $isVeren'),
+                            Text('İşi ALan: $isVeren'),
                             Text('İş Fiyatı: $isFiyati'),
                             Text('İş Günü: $isGunu'),
                             Text('İş Veren: $isAciklamasi'),
@@ -56,7 +75,7 @@ class Islerim extends StatelessWidget {
               }
             }
 
-            // Veri yoksa veya işlemler tamamlanmadıysa boş bir widget döndürebilirsiniz
+            // Display a message if there's no data or the operations are not completed
             return Container(
               alignment: Alignment.center,
               child: Text('İşler bulunamadı.'),
