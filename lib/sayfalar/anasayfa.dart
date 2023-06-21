@@ -278,6 +278,7 @@ final double ekran=MediaQuery.of(context).size.height;
               var field3 = data1['IsAciklama'];
               var oylesine = data1['Kullaniciadi'];
               var field4 = data1['date'];
+              var path = data1['path'];
 
               DateTime currentDate = DateTime.now();
               var dateFormatter = DateFormat('dd/MM/yyyy');
@@ -288,7 +289,7 @@ final double ekran=MediaQuery.of(context).size.height;
                 containers.add(
                   Container(
                     width: MediaQuery.of(context).size.width - 25,
-                    child: DikeyTaslak(field1, field3, field2, field4, context, oylesine),
+                    child: DikeyTaslak(field1,path, field3, field2, field4, context, oylesine),
                   ),
                 );
               }

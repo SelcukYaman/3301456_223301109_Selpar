@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import '../sayfalar/isguncelle.dart';
 import '../sayfalar/detay.dart';
 import 'islemler.dart';
@@ -70,8 +71,8 @@ Widget YatayTaslak(String baslik,String aciklama,String fiyat, String tarih,Buil
     );
   }
 
-Widget DikeyTaslak(String baslik,String aciklama,String fiyat, String tarih,BuildContext context1,String IsSahibi){
-
+Widget DikeyTaslak(String baslik,String path,String aciklama,String fiyat, String tarih,BuildContext context1,String IsSahibi){
+print(path+"burası path");
   if(baslik!=null&&aciklama!=null&&fiyat!=null&&tarih!=null){
 
     String truncatedAciklama ;
@@ -88,14 +89,21 @@ Widget DikeyTaslak(String baslik,String aciklama,String fiyat, String tarih,Buil
         border: Border.all(color: Renk_Belirle("000000"),width: 1),
         borderRadius: BorderRadius.circular(30),
       ),
-      child: Row(children:[ Container(
-        width:85,height: 75,
-        child: AutoSizeText(baslik,style: GoogleFonts.babylonica(color: Colors.white,fontSize: 16),),
-        decoration: BoxDecoration(color: Renk_Belirle("123456"),borderRadius: BorderRadius.circular(150)),
-        padding: EdgeInsets.all(25),
-
-      ),
-        SizedBox(width: 10,),
+      child: Row(children:[
+        Container(
+          width: 85,
+          height: 75,
+          decoration: BoxDecoration(
+            color: Renk_Belirle("123456"),
+            borderRadius: BorderRadius.circular(150),
+          ),
+          padding: EdgeInsets.all(25),
+          child:
+            Image.network(
+              path,
+          ),
+        ),
+    SizedBox(width: 10,),
         Column(children: [
           AutoSizeText(truncatedAciklama ,style: GoogleFonts.quicksand(fontWeight: FontWeight.w900),),
           Row(children: [
@@ -182,6 +190,7 @@ Widget ProfilTaslak(String baslik,String aciklama,String fiyat, String tarih,Bui
 
         Row(children: [
           IconButton(
+
             icon: Icon(Icons.delete,),
             onPressed: () {
               deleteData(id,context1);

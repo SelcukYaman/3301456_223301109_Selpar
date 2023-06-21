@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage_web/firebase_storage_web.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:selpar_selcuk_yamann_223301109/sabitler/renk.dart';
@@ -8,6 +10,10 @@ import 'package:intl/intl.dart';
 import 'package:selpar_selcuk_yamann_223301109/sayfalar/Anasayfa.dart';
 import '../arayuz.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 class IlanVer extends StatefulWidget {
   const IlanVer({Key? key}) : super(key: key);
 
@@ -97,6 +103,43 @@ height: MediaQuery.of(context).size.height-84,
                         Konu("İşin Konusu",75,IsKonu),
                         Konu("İşin Fiyat",75,IsFiyat),
                         Konu("İşin Açıklaması",125,IsAciklama),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          child: Row(children: [
+                            Container(
+                              alignment: Alignment.center,
+                              width: MediaQuery.of(context).size.width/3,
+                              height: 75,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Renk_Belirle("32D9C9"),width: 15,),
+                                color: Renk_Belirle("32D9C9"),
+                              ),
+                              child: AutoSizeText("Dosya Sec",style: GoogleFonts.quicksand()),
+                            ) ,
+                            Container(
+                              width: MediaQuery.of(context).size.width/2,
+                              height: 75,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Renk_Belirle("43F0DC"),width: 15,),
+                                color: Renk_Belirle("43F0DC"),
+                              ),
+                              child: SizedBox(
+                                height: 18,
+
+                                child: Container(
+                                    child: FilledButton(
+                                     onPressed: () {
+                                       selectFile();
+
+                                      },
+                                      child: Text("Seç"),
+                                    )
+                                ),
+
+                              ),
+                            )
+                          ],),
+                        ),
                         Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -118,7 +161,7 @@ height: MediaQuery.of(context).size.height-84,
                                     child: AutoSizeText("Tarih Seç",style: GoogleFonts.quicksand()),
                                   ),
                                 ) ,
-
+                            // ElevatedButton
                                 Container(
                                   width: MediaQuery.of(context).size.width/2,
                                   height: 50,
@@ -198,6 +241,33 @@ height: MediaQuery.of(context).size.height-84,
     ),
     );
   }
+
+  PlatformFile? pickedFile;
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result == null) return;
+    setState(() {
+      pickedFile = result.files.first;
+    });
+    uploadFile(); }
+  String urlDownload="";
+  Future<void> uploadFile() async {
+    if (pickedFile == null) return;
+
+    final path = 'files/${pickedFile!.name}';
+
+    final fileBytes = pickedFile!.bytes!;
+
+    try {
+      await firebase_storage.FirebaseStorage.instance.ref(path).putData(fileBytes);
+       urlDownload = await firebase_storage.FirebaseStorage.instance.ref(path).getDownloadURL();
+      print('Download Link: $urlDownload');
+
+    } catch (e) {
+      print('Upload Error: $e');
+    }
+  }
   Widget Konu(String Baslik ,double Yukseklik,TextEditingController VeriAta){
     return Container(
 margin: EdgeInsets.symmetric(vertical: 10),
@@ -254,6 +324,7 @@ margin: EdgeInsets.symmetric(vertical: 10),
       'IsAdi': adi,
       'IsFiyati': fiyati,
       'Kullaniciadi': Kullaniciadi,
+      'path':urlDownload.toString(),
 
     })
         .then((value) {
