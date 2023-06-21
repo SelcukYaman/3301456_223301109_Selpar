@@ -1,30 +1,29 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
-import 'deneme2.dart';
+class ChartData {
+  final String label;
+  final double value;
 
-class Deneme1 extends StatelessWidget {
+  ChartData(this.label, this.value);
+}
+
+class PieChartWidget extends StatelessWidget {
+  final List<ChartData> data;
+
+  PieChartWidget({required this.data});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Navigator Hatası',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Anasayfa'),
-        ),
-        body: Center(
-          child: ElevatedButton(
-            child: Text('İkinci Sayfaya Git'),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Deneme2()),
-              );
-            },
-          ),
-        ),
-      ),
+    return SfCircularChart(
+      series: <CircularSeries>[
+        PieSeries<ChartData, String>(
+          dataSource: data,
+          xValueMapper: (ChartData chartData, _) => chartData.label,
+          yValueMapper: (ChartData chartData, _) => chartData.value,
+          dataLabelSettings: DataLabelSettings(isVisible: true),
+        )
+      ],
     );
   }
 }

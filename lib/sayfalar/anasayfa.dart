@@ -279,7 +279,6 @@ final double ekran=MediaQuery.of(context).size.height;
               var oylesine = data1['Kullaniciadi'];
               var field4 = data1['date'];
 
-              // Check if the date is in the future
               DateTime currentDate = DateTime.now();
               var dateFormatter = DateFormat('dd/MM/yyyy');
               DateTime? dataDate = dateFormatter.parse(field4);
@@ -309,7 +308,7 @@ final double ekran=MediaQuery.of(context).size.height;
   }
   ScrollController _scrollController = ScrollController();
   int adet=0;
-  Widget fetchFirestoreDatayatay(BuildContext context, String SuAnkiKullanici) {
+  Widget fetchFirestoreDatayatay(BuildContext context, String currentUser) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('selcukyaman123123').snapshots(),
       builder: (context, snapshot) {
@@ -325,20 +324,20 @@ final double ekran=MediaQuery.of(context).size.height;
           QuerySnapshot<Object?>? querySnapshot = snapshot.data;
           List<DocumentSnapshot<Object?>>? docs = querySnapshot?.docs;
           if (docs != null && docs.isNotEmpty) {
-            int sayi = docs.length;
-            print(sayi);
+            int count = docs.length;
+            print(count);
             List<Widget> containers = [];
-            for (int i = 0; i < sayi; i++) {
-              var data1 = docs[i].data() as Map<String, dynamic>;
-              var field1 = data1['IsAdi'];
-              var field2 = data1['IsFiyati'];
-              var field3 = data1['IsAciklama'];
-              var oylesine = data1['Kullaniciadi'];
-              var field4 = data1['date'];
+            for (int i = 0; i < count; i++) {
+              var data = docs[i].data() as Map<String, dynamic>;
+              var field1 = data['IsAdi'];
+              var field2 = data['IsFiyati'];
+              var field3 = data['IsAciklama'];
+              var username = data['Kullaniciadi'];
+              var field4 = data['date'];
               DateTime currentDate = DateTime.now();
               var dateFormatter = DateFormat('dd/MM/yyyy');
               DateTime? dataDate = dateFormatter.parse(field4);
-              if (oylesine != SuAnkiKullanici && dataDate!.isAfter(currentDate)) {
+              if (username != currentUser && dataDate!.isAfter(currentDate)) {
                 print('field1: $field1, field2: $field2, field3: $field3, field4: $field4');
 
                 if (context != null) {
@@ -346,42 +345,30 @@ final double ekran=MediaQuery.of(context).size.height;
                   print(adet);
                   containers.add(
                     Container(
-                      width: MediaQuery.of(context).size.width - 25,
-                      child: YatayTaslak(field1, field3, field2, field4, context, oylesine),
+                      width: 400, // Genişliği burada sınırla
+                      child: YatayTaslak(field1, field3, field2, field4, context, username),
                     ),
                   );
                 }
               }
             }
 
-            List<Widget> deneme1 = [];
-
-
-
-
-            return Scrollbar(
-              isAlwaysShown: true,
-              controller: _scrollController, // ScrollController'ı Scrollbar'a atayın
-              child: SingleChildScrollView(
-                controller: _scrollController, // ScrollController'ı ScrollView'ye atayın
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: Row(
-                        children: containers.map((container) {
-                          return Container(
-                            width: 400,
-                            child: container,
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ],
+            return ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: containers.map((container) {
+                      return Container(
+                        width: 400, // Genişliği burada sınırla
+                        child: container,
+                      );
+                    }).toList(),
+                  ),
                 ),
-              ),
+              ],
             );
           }
         }

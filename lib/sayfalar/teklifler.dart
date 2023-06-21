@@ -1,13 +1,25 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class ChartData {
+  final String duration;
+  final int price;
+
+  ChartData(this.duration, this.price);
+}
+
 class teklifler extends StatelessWidget {
+  final User? user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
-    final User? user = FirebaseAuth.instance.currentUser;
-
     if (user == null) {
       // Kullanıcı oturum açmamışsa bir hata mesajı gösterelim
       return Scaffold(
@@ -20,7 +32,7 @@ class teklifler extends StatelessWidget {
       );
     }
 
-    final String kullaniciEpostasi = user.email!;
+    final String kullaniciEpostasi = user!.email!;
 
     return Scaffold(
       appBar: AppBar(
@@ -40,7 +52,7 @@ class teklifler extends StatelessWidget {
 
             // İlanları gruplara ayıralım
             ilanlar.forEach((ilan) {
-              String isAdi = ilan['IsAdi'];
+              String isAdi = ilan['date'];
               if (gruplanmisIlanlar.containsKey(isAdi)) {
                 gruplanmisIlanlar[isAdi]!.add(ilan);
               } else {
@@ -71,55 +83,83 @@ class teklifler extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    children: ilanGrubu.map((ilan) {
-                      String aciklama = ilan['IsAciklama'];
-                      String olusturmaTarihi = ilan['date'];
-                      String fiyat = ilan['IsFiyati'];
-                      String teklifVeren = ilan['Kullaniciadi'];
-                      String issahibi=ilan["KayitSahibi"];
-                      String id=ilan.id.toString();
-                      return ListTile(
-                        title: Text(
-                          "Teklif: $aciklama",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 8),
-                            Text(
-                              'İş Günü: $fiyat',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Mesaj: $olusturmaTarihi',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Teklifi Veren E-posta: $teklifVeren',
-                              style: TextStyle(fontSize: 14),
+                    children: [
+                      Container(
+                        height: 300,
+                        child: SfCircularChart(
+                          series: <CircularSeries>[
+                            PieSeries<ChartData, String>(
+                              dataSource: ilanGrubu.map((ilan) {
+                                String aciklama = ilan['IsAciklama'];
+                                int fiyat = int.parse( ilan['IsAciklama']);
+                                return ChartData(aciklama, fiyat);
+                              }).toList(),
+                              xValueMapper: (ChartData chartData, _) =>
+                              chartData.duration,
+                              yValueMapper: (ChartData chartData, _) =>
+                              chartData.price,
+                              dataLabelSettings: DataLabelSettings(
+                                isVisible: true,
+                                labelPosition: ChartDataLabelPosition.outside,
+                              ),
                             ),
                           ],
                         ),
-                        trailing: ElevatedButton(
-                          onPressed: () {
-                           TeklifOnayla(aciklama,olusturmaTarihi,fiyat,teklifVeren,issahibi,id);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.green,
-                            onPrimary: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
+                      ),
+                      SizedBox(height: 20),
+                      Column(
+                        children: ilanGrubu.map((ilan) {
+                          String aciklama = ilan['IsAciklama'];
+                          String olusturmaTarihi = ilan['date'];
+                          String fiyat = ilan['IsFiyati'];
+                          String teklifVeren = ilan['Kullaniciadi'];
+                          String issahibi = ilan["KayitSahibi"];
+                          String id = ilan.id.toString();
+                          return ListTile(
+                            title: Text(
+                              "Teklif: $aciklama",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          child: Text('Onayla'),
-                        ),
-                      );
-                    }).toList(),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(height: 8),
+                                Text(
+                                  'İş Günü: $fiyat',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Mesaj: $olusturmaTarihi',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Teklifi Veren E-posta: $teklifVeren',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
+                            trailing: ElevatedButton(
+                              onPressed: () {
+                                TeklifOnayla(aciklama, olusturmaTarihi, fiyat,
+                                    teklifVeren, issahibi, id);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.green,
+                                onPrimary: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              child: Text('Onayla'),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
                 );
               },
@@ -133,7 +173,9 @@ class teklifler extends StatelessWidget {
       ),
     );
   }
-  TeklifOnayla(String fiyat, String isinadi, String sure, String teklifVeren, String issahibi, String id) async {
+
+  TeklifOnayla(String fiyat, String isinadi, String sure, String teklifVeren,
+      String issahibi, String id) async {
     // Firebase'in başlatılması
     await Firebase.initializeApp();
 
@@ -157,5 +199,15 @@ class teklifler extends StatelessWidget {
     } catch (e) {
       print('Hata: $e');
     }
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: teklifler(),
+    );
   }
 }
